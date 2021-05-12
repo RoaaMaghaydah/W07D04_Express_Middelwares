@@ -3,8 +3,9 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const authRouter = express.Router();
+const products = express.Router();
 const users = ["John", "Mark"];
-
+const productsArr=["keyboard","mouse"];
 const logUsers=(req,res,next)=>{
     console.log("function log user")
     console.log(users)      
@@ -20,7 +21,8 @@ app.use(logUsers);
 app.use("/users",logMethod)
 app.use(express.json())
 
-app.use("/auth", authRouter);
+app.use("/users", authRouter);
+app.use("/products", products);
 
 authRouter.use((req,res,next)=>{
     console.log("routerrrrr")
@@ -28,12 +30,28 @@ authRouter.use((req,res,next)=>{
     next();
 })
 
-authRouter.get("/users",(req,res,next)=>{
+/*authRouter.use("/users/create",(req,res,next)=>{
+  
+})*/
+
+authRouter.get("/",(req,res,next)=>{
     res.json(users);
 })
-authRouter.post("/users/create",(req,res,next)=>{
 
+authRouter.post("/create",(req,res,next)=>{
+    const name=req.body.name;
+     users.push(name);
+    res.json(users)
 })
+
+products.put("/update",(req,res,next)=>{
+    const random=Math.floor(users.length * Math.random())
+    users[random]=req.body.name;
+    res.json(users)
+})
+
+
+
 
 app.get("/users", (req, res, next) => {
   res.json(users);
