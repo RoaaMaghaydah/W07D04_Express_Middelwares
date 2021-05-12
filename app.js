@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 
 const app = express();
 const port = 3000;
@@ -14,7 +15,7 @@ const productsArr = ["keyboard", "mouse"];
 const logUsers = (req, res, next) => {
     console.log("function log user")
     console.log(users)
-    next()
+    next();
 }
 const logMethod = (req, res, next) => {
     console.log("function logMethod")
@@ -22,8 +23,7 @@ const logMethod = (req, res, next) => {
     next();
 }
 /*_______________________________________*/
-
-
+ 
 app.use(logUsers);
 app.use("/users", logMethod)
 app.use(express.json())
@@ -39,18 +39,15 @@ authRouter.use((req, res, next) => {
 
 authRouter.use("/create", (req, res, next) => {
     let n = req.body.name
-    if (users.indexOf(n) !== -1) {
-        console.log("found")
-    }
+    console.log(req.body);
     next();
 })
-products.use("*", (req, res, next) => {
-    console.log("products router")
-    next()
-})
+
+products.use(morgan("default"))
+
 /*_______________________________________*/
 
-authRouter.get("/", (req, res, next) => {
+authRouter.get("/users", (req, res, next) => {
     res.json(users);
 })
 
@@ -58,25 +55,28 @@ authRouter.post("/create", (req, res, next) => {
     const name = req.body.name;
     users.push(name);
     res.json(users)
-
 })
 /*_______________________________________*/
 
 
-products.put("/update", (req, res, next) => {
+products.put("/products/update", (req, res, next) => {
     const random = Math.floor(users.length * Math.random())
-    users[random] = req.body.name;
-    res.json(users)
+    productsArr[random] = req.body.name;
+    res.json(productsArr)
 })
 
 /*_______________________________________*/
-
 
 
 app.get("/users", (req, res, next) => {
+    if(users.length!==0){
     res.json(users);
-
+    }
+    else{   
+       next();      
+    }
 });
+
 /*_______________________________________*/
 
 app.get("*", (req, res, next) => {
@@ -102,20 +102,21 @@ app.put("*", (req, res, next) => {
 /*_______________________________________*/
 
 app.use((err, req, res, next) => {
-    if (users.length === 0) {
-        next("errer");
+   
+    if (users.length=== 0){
+     // next(error);
         console.log("no users");
         res.json("no users");
+       
     }
 
-    res.json({
+  res.json({
         error: {
             status: err.status,
             message: err.message,
         },
     });
 })
-
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
