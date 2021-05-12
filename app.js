@@ -3,15 +3,16 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
-const users = [];
+const users = ["John", "Mark"];
 
 const logUsers=(req,res,next)=>{
     console.log("function log user")
-    res.json(users)       
+    console.log(users)      
      next()
 }
 const logMethod =(req,res,next)=>{
 console.log("function logMethod")
+console.log(req.method);
 next();
 }
 
